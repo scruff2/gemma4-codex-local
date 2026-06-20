@@ -8,4 +8,4 @@
 model = "gemma4-codex"
 model_provider = "local_gemma4"
 model_reasoning_effort = "none"
-model_context_window = 16384
+model_context_window = 32768

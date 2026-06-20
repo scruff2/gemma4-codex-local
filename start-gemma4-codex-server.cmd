@@ -18,7 +18,7 @@ if not defined GEMMA4_MODEL if "%GEMMA4_HF_FILE%"=="" if /i "%GEMMA4_HF_REPO%"==
 if "%GEMMA4_HOST%"=="" set "GEMMA4_HOST=127.0.0.1"
 if "%GEMMA4_PORT%"=="" set "GEMMA4_PORT=18080"
 if "%GEMMA4_ALIAS%"=="" set "GEMMA4_ALIAS=gemma4-codex"
-if "%GEMMA4_CTX_SIZE%"=="" set "GEMMA4_CTX_SIZE=16384"
+if "%GEMMA4_CTX_SIZE%"=="" set "GEMMA4_CTX_SIZE=32768"
 if "%GEMMA4_GPU_LAYERS%"=="" set "GEMMA4_GPU_LAYERS=auto"
 if "%GEMMA4_LOG%"=="" set "GEMMA4_LOG=%CD%\gemma4-codex-server.log"
 

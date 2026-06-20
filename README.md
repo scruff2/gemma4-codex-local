@@ -98,10 +98,10 @@ The profile uses:
 model = "gemma4-codex"
 model_provider = "local_gemma4"
 model_reasoning_effort = "none"
-model_context_window = 16384
+model_context_window = 32768
 ```
 
-The Codex profile and server launcher both default to `16384` context for a safer first run on an 8 GB RTX 3070. Raise both `model_context_window` and `GEMMA4_CTX_SIZE` after confirming the model fits your workload. Gemma does not understand Codex's hosted-model reasoning controls, so the Gemma profile disables inherited reasoning effort.
+The Codex profile and server launcher both default to `32768` context on this workstation. Keep `model_context_window` and `GEMMA4_CTX_SIZE` aligned so Codex does not send prompts larger than the local server can accept. Gemma does not understand Codex's hosted-model reasoning controls, so the Gemma profile disables inherited reasoning effort.
 
 ## Machine Notes
 
@@ -180,7 +180,7 @@ This warning is nonfatal. Codex does not have a built-in catalog entry for the c
 
 `request exceeds the available context size`
 
-Start `llama-server` with a larger context and update `model_context_window` in `gemma4.config.toml` to match. This project defaults to `GEMMA4_CTX_SIZE=16384`. Larger context windows need more memory, especially on 12B and larger models.
+Start `llama-server` with a larger context and update `model_context_window` in `gemma4.config.toml` to match. This project defaults to `GEMMA4_CTX_SIZE=32768`. Larger context windows need more memory, especially on 12B and larger models.
 
 `llama-server` starts but does not use the GPU
 
