@@ -103,6 +103,24 @@ model_context_window = 32768
 
 The Codex profile and server launcher both default to `32768` context on this workstation. Keep `model_context_window` and `GEMMA4_CTX_SIZE` aligned so Codex does not send prompts larger than the local server can accept. Gemma does not understand Codex's hosted-model reasoning controls, so the Gemma profile disables inherited reasoning effort.
 
+## Reasoning Settings
+
+The Gemma4-12B Agentic v2 model itself supports Gemma's native thinking behavior. The model card describes it as a coding, reasoning, tool-use, and agentic model, and notes that v2 thinks in Gemma's native thought channel before answering.
+
+This Codex setup currently keeps reasoning disabled at the integration layer:
+
+```toml
+model_reasoning_effort = "none"
+```
+
+```cmd
+--reasoning off
+```
+
+That is deliberate. Codex hosted-model reasoning controls do not map cleanly to a local llama.cpp Gemma model, and exposing raw thought-channel output may not behave like OpenAI-hosted reasoning summaries.
+
+Future experiment: change the llama.cpp launcher from `--reasoning off` to `--reasoning auto` while keeping `model_reasoning_effort = "none"` in the Codex profile. That would let the Gemma chat template decide whether to use native thinking behavior without pretending Codex has OpenAI-style reasoning-effort support for this local model.
+
 ## Machine Notes
 
 This setup was sized for:
