@@ -7,24 +7,17 @@ if not defined GEMMA4_LLAMA_SERVER if exist "%CD%\llama-cpp\llama-server.exe" se
 if not defined GEMMA4_LLAMA_SERVER if exist "%USERPROFILE%\Documents\Voice-Enabled\tools\llama-cpp\llama-server.exe" set "GEMMA4_LLAMA_SERVER=%USERPROFILE%\Documents\Voice-Enabled\tools\llama-cpp\llama-server.exe"
 if not defined GEMMA4_LLAMA_SERVER set "GEMMA4_LLAMA_SERVER=%CD%\llama-cpp\llama-server.exe"
 
-if not defined GEMMA4_MODEL if exist "%CD%\models\gemma-4-E4B_q4_0-it.gguf" set "GEMMA4_MODEL=%CD%\models\gemma-4-E4B_q4_0-it.gguf"
-if not defined GEMMA4_MMPROJ if exist "%CD%\models\gemma-4-E4B-it-mmproj.gguf" set "GEMMA4_MMPROJ=%CD%\models\gemma-4-E4B-it-mmproj.gguf"
+if not defined GEMMA4_MODEL if exist "%CD%\models\gemma-4-12b-it-qat-q4_0.gguf" set "GEMMA4_MODEL=%CD%\models\gemma-4-12b-it-qat-q4_0.gguf"
+if not defined GEMMA4_MMPROJ if exist "%CD%\models\mmproj-gemma-4-12b-it-qat-q4_0.gguf" set "GEMMA4_MMPROJ=%CD%\models\mmproj-gemma-4-12b-it-qat-q4_0.gguf"
 
-set "GEMMA4_HF_CACHE=%USERPROFILE%\.cache\huggingface\hub\models--google--gemma-4-E4B-it-qat-q4_0-gguf\snapshots"
-if not defined GEMMA4_MODEL if exist "%GEMMA4_HF_CACHE%" (
-  for /d %%D in ("%GEMMA4_HF_CACHE%\*") do (
-    if not defined GEMMA4_MODEL if exist "%%~fD\gemma-4-E4B_q4_0-it.gguf" set "GEMMA4_MODEL=%%~fD\gemma-4-E4B_q4_0-it.gguf"
-    if not defined GEMMA4_MMPROJ if exist "%%~fD\gemma-4-E4B-it-mmproj.gguf" set "GEMMA4_MMPROJ=%%~fD\gemma-4-E4B-it-mmproj.gguf"
-  )
-)
-
-if not defined GEMMA4_MODEL set "GEMMA4_MODEL=%CD%\models\gemma-4-E4B_q4_0-it.gguf"
-if not defined GEMMA4_MMPROJ set "GEMMA4_MMPROJ=%CD%\models\gemma-4-E4B-it-mmproj.gguf"
+if not defined GEMMA4_MODEL if "%GEMMA4_HF_REPO%"=="" set "GEMMA4_HF_REPO=google/gemma-4-12B-it-qat-q4_0-gguf"
+if not defined GEMMA4_MODEL if "%GEMMA4_HF_FILE%"=="" if /i "%GEMMA4_HF_REPO%"=="google/gemma-4-12B-it-qat-q4_0-gguf" set "GEMMA4_HF_FILE=gemma-4-12b-it-qat-q4_0.gguf"
+if not defined GEMMA4_MODEL if "%GEMMA4_HF_FILE%"=="" if /i "%GEMMA4_HF_REPO%"=="google/gemma-4-31B-it-qat-q4_0-gguf" set "GEMMA4_HF_FILE=gemma-4-31B_q4_0-it.gguf"
 if "%GEMMA4_HOST%"=="" set "GEMMA4_HOST=127.0.0.1"
 if "%GEMMA4_PORT%"=="" set "GEMMA4_PORT=18080"
 if "%GEMMA4_ALIAS%"=="" set "GEMMA4_ALIAS=gemma4-codex"
-if "%GEMMA4_CTX_SIZE%"=="" set "GEMMA4_CTX_SIZE=16384"
-if "%GEMMA4_GPU_LAYERS%"=="" set "GEMMA4_GPU_LAYERS=999"
+if "%GEMMA4_CTX_SIZE%"=="" set "GEMMA4_CTX_SIZE=32768"
+if "%GEMMA4_GPU_LAYERS%"=="" set "GEMMA4_GPU_LAYERS=auto"
 if "%GEMMA4_LOG%"=="" set "GEMMA4_LOG=%CD%\gemma4-codex-server.log"
 
 if not exist "%GEMMA4_LLAMA_SERVER%" (
@@ -36,12 +29,12 @@ if not exist "%GEMMA4_LLAMA_SERVER%" (
   exit /b 1
 )
 
-if not exist "%GEMMA4_MODEL%" (
+if defined GEMMA4_MODEL if not exist "%GEMMA4_MODEL%" (
   echo Gemma model file not found:
   echo   %GEMMA4_MODEL%
   echo.
   echo Set GEMMA4_MODEL to your .gguf model path, or place the model at:
-  echo   %CD%\models\gemma-4-E4B_q4_0-it.gguf
+  echo   %CD%\models\gemma-4-12b-it-qat-q4_0.gguf
   exit /b 1
 )
 
@@ -65,11 +58,45 @@ echo.
 echo llama-server:
 echo   %GEMMA4_LLAMA_SERVER%
 echo.
-echo model:
-echo   %GEMMA4_MODEL%
+if defined GEMMA4_MODEL (
+  echo model:
+  echo   %GEMMA4_MODEL%
+) else (
+  echo Hugging Face repo:
+  echo   %GEMMA4_HF_REPO%
+  if defined GEMMA4_HF_FILE (
+    echo Hugging Face model file:
+    echo   %GEMMA4_HF_FILE%
+  )
+)
 echo.
 
-if exist "%GEMMA4_MMPROJ%" (
+if not defined GEMMA4_MODEL (
+  if defined GEMMA4_HF_FILE (
+    "%GEMMA4_LLAMA_SERVER%" ^
+      --hf-repo "%GEMMA4_HF_REPO%" ^
+      --hf-file "%GEMMA4_HF_FILE%" ^
+      --host "%GEMMA4_HOST%" ^
+      --port "%GEMMA4_PORT%" ^
+      --ctx-size "%GEMMA4_CTX_SIZE%" ^
+      --n-gpu-layers "%GEMMA4_GPU_LAYERS%" ^
+      --jinja ^
+      --reasoning off ^
+      --alias "%GEMMA4_ALIAS%" ^
+      --log-file "%GEMMA4_LOG%"
+  ) else (
+    "%GEMMA4_LLAMA_SERVER%" ^
+      --hf-repo "%GEMMA4_HF_REPO%" ^
+      --host "%GEMMA4_HOST%" ^
+      --port "%GEMMA4_PORT%" ^
+      --ctx-size "%GEMMA4_CTX_SIZE%" ^
+      --n-gpu-layers "%GEMMA4_GPU_LAYERS%" ^
+      --jinja ^
+      --reasoning off ^
+      --alias "%GEMMA4_ALIAS%" ^
+      --log-file "%GEMMA4_LOG%"
+  )
+) else if exist "%GEMMA4_MMPROJ%" (
   "%GEMMA4_LLAMA_SERVER%" ^
     -m "%GEMMA4_MODEL%" ^
     --mmproj "%GEMMA4_MMPROJ%" ^

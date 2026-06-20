@@ -6,7 +6,7 @@ This starter was tested on Windows with:
 
 - Codex CLI `0.141.0`
 - `llama-server` from `llama.cpp`
-- `google/gemma-4-E4B-it-qat-q4_0-gguf`
+- `google/gemma-4-12B-it-qat-q4_0-gguf`
 - Codex `wire_api = "responses"`
 
 ## What This Solves
@@ -25,8 +25,8 @@ Install or download:
 
 - Codex CLI
 - `llama.cpp` with `llama-server`
-- A Gemma 4 GGUF model file, such as `gemma-4-E4B_q4_0-it.gguf`
-- Optional multimodal projector, such as `gemma-4-E4B-it-mmproj.gguf`
+- A Gemma 4 GGUF model file, such as `gemma-4-12b-it-qat-q4_0.gguf`
+- Optional multimodal projector, such as `mmproj-gemma-4-12b-it-qat-q4_0.gguf`
 
 Recommended local layout:
 
@@ -35,18 +35,30 @@ gemma4-codex-local/
   llama-cpp/
     llama-server.exe
   models/
-    gemma-4-E4B_q4_0-it.gguf
-    gemma-4-E4B-it-mmproj.gguf
+    gemma-4-12b-it-qat-q4_0.gguf
+    mmproj-gemma-4-12b-it-qat-q4_0.gguf
 ```
 
-The launcher also checks the Hugging Face cache path used by `huggingface_hub` on Windows for `google/gemma-4-E4B-it-qat-q4_0-gguf`. If you already downloaded that model, the script may find it without copying files into `models/`.
+If `GEMMA4_MODEL` is not set and the local `models/` file is not present, the launcher downloads and starts the official 12B GGUF from Hugging Face:
+
+```text
+google/gemma-4-12B-it-qat-q4_0-gguf
+```
 
 You can also keep files anywhere and set environment variables before launching:
 
 ```cmd
 set GEMMA4_LLAMA_SERVER=C:\path\to\llama-server.exe
-set GEMMA4_MODEL=C:\path\to\gemma-4-E4B_q4_0-it.gguf
-set GEMMA4_MMPROJ=C:\path\to\gemma-4-E4B-it-mmproj.gguf
+set GEMMA4_MODEL=C:\path\to\gemma-4-12b-it-qat-q4_0.gguf
+set GEMMA4_MMPROJ=C:\path\to\mmproj-gemma-4-12b-it-qat-q4_0.gguf
+```
+
+On a computer with substantially more RAM and VRAM, you can try the 31B model:
+
+```cmd
+set GEMMA4_HF_REPO=google/gemma-4-31B-it-qat-q4_0-gguf
+set GEMMA4_HF_FILE=gemma-4-31B_q4_0-it.gguf
+start-gemma4-codex-server.cmd
 ```
 
 ## Configure Codex
@@ -68,10 +80,11 @@ The profile uses:
 ```toml
 model = "gemma4-codex"
 model_provider = "local_gemma4"
-model_context_window = 16384
+model_reasoning_effort = "none"
+model_context_window = 32768
 ```
 
-The `16384` context matters. Codex's own startup prompt can exceed 4096 tokens before your first user message reaches the model.
+The `32768` context gives Codex more room for project files and tool output. Gemma does not understand Codex's hosted-model reasoning controls, so the Gemma profile disables inherited reasoning effort.
 
 ## Start Gemma 4
 
@@ -139,7 +152,7 @@ This warning is nonfatal. Codex does not have a built-in catalog entry for the c
 
 `request exceeds the available context size`
 
-Start `llama-server` with a larger context. This project defaults to `GEMMA4_CTX_SIZE=16384`.
+Start `llama-server` with a larger context. This project defaults to `GEMMA4_CTX_SIZE=32768`. Larger context windows need more memory, especially on 12B and 31B models.
 
 `gemma4-codex is not listed by /v1/models`
 
