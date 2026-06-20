@@ -39,6 +39,8 @@ gemma4-codex-local/
     gemma-4-E4B-it-mmproj.gguf
 ```
 
+The launcher also checks the Hugging Face cache path used by `huggingface_hub` on Windows for `google/gemma-4-E4B-it-qat-q4_0-gguf`. If you already downloaded that model, the script may find it without copying files into `models/`.
+
 You can also keep files anywhere and set environment variables before launching:
 
 ```cmd

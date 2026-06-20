@@ -3,9 +3,23 @@ setlocal
 
 cd /d "%~dp0"
 
-if "%GEMMA4_LLAMA_SERVER%"=="" set "GEMMA4_LLAMA_SERVER=%CD%\llama-cpp\llama-server.exe"
-if "%GEMMA4_MODEL%"=="" set "GEMMA4_MODEL=%CD%\models\gemma-4-E4B_q4_0-it.gguf"
-if "%GEMMA4_MMPROJ%"=="" set "GEMMA4_MMPROJ=%CD%\models\gemma-4-E4B-it-mmproj.gguf"
+if not defined GEMMA4_LLAMA_SERVER if exist "%CD%\llama-cpp\llama-server.exe" set "GEMMA4_LLAMA_SERVER=%CD%\llama-cpp\llama-server.exe"
+if not defined GEMMA4_LLAMA_SERVER if exist "%USERPROFILE%\Documents\Voice-Enabled\tools\llama-cpp\llama-server.exe" set "GEMMA4_LLAMA_SERVER=%USERPROFILE%\Documents\Voice-Enabled\tools\llama-cpp\llama-server.exe"
+if not defined GEMMA4_LLAMA_SERVER set "GEMMA4_LLAMA_SERVER=%CD%\llama-cpp\llama-server.exe"
+
+if not defined GEMMA4_MODEL if exist "%CD%\models\gemma-4-E4B_q4_0-it.gguf" set "GEMMA4_MODEL=%CD%\models\gemma-4-E4B_q4_0-it.gguf"
+if not defined GEMMA4_MMPROJ if exist "%CD%\models\gemma-4-E4B-it-mmproj.gguf" set "GEMMA4_MMPROJ=%CD%\models\gemma-4-E4B-it-mmproj.gguf"
+
+set "GEMMA4_HF_CACHE=%USERPROFILE%\.cache\huggingface\hub\models--google--gemma-4-E4B-it-qat-q4_0-gguf\snapshots"
+if not defined GEMMA4_MODEL if exist "%GEMMA4_HF_CACHE%" (
+  for /d %%D in ("%GEMMA4_HF_CACHE%\*") do (
+    if not defined GEMMA4_MODEL if exist "%%~fD\gemma-4-E4B_q4_0-it.gguf" set "GEMMA4_MODEL=%%~fD\gemma-4-E4B_q4_0-it.gguf"
+    if not defined GEMMA4_MMPROJ if exist "%%~fD\gemma-4-E4B-it-mmproj.gguf" set "GEMMA4_MMPROJ=%%~fD\gemma-4-E4B-it-mmproj.gguf"
+  )
+)
+
+if not defined GEMMA4_MODEL set "GEMMA4_MODEL=%CD%\models\gemma-4-E4B_q4_0-it.gguf"
+if not defined GEMMA4_MMPROJ set "GEMMA4_MMPROJ=%CD%\models\gemma-4-E4B-it-mmproj.gguf"
 if "%GEMMA4_HOST%"=="" set "GEMMA4_HOST=127.0.0.1"
 if "%GEMMA4_PORT%"=="" set "GEMMA4_PORT=18080"
 if "%GEMMA4_ALIAS%"=="" set "GEMMA4_ALIAS=gemma4-codex"
@@ -47,6 +61,12 @@ echo.
 echo Keep this window open while Codex is using the local model.
 echo Log file:
 echo   %GEMMA4_LOG%
+echo.
+echo llama-server:
+echo   %GEMMA4_LLAMA_SERVER%
+echo.
+echo model:
+echo   %GEMMA4_MODEL%
 echo.
 
 if exist "%GEMMA4_MMPROJ%" (
