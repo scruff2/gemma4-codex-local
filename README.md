@@ -2,16 +2,7 @@
 
 Run a local Gemma 4 GGUF model as an OpenAI-compatible `llama.cpp` server, then connect Codex to it with a Codex profile.
 
-This starter was tested on Windows with:
-
-- Codex CLI `0.141.0`
-- `llama-server` from `llama.cpp`
-- `google/gemma-4-12B-it-qat-q4_0-gguf`
-- Codex `wire_api = "responses"`
-
-## What This Solves
-
-Codex can use custom model providers, but a local model must be served through an API Codex understands. This project starts Gemma 4 with `llama-server` and configures Codex to use the Responses API at:
+This setup starts Gemma 4 with `llama-server` and configures Codex to use the Responses API at:
 
 ```text
 http://127.0.0.1:18080/v1
@@ -25,39 +16,65 @@ Install or download:
 
 - Codex CLI
 - `llama.cpp` with `llama-server`
-- A Gemma 4 GGUF model file, such as `gemma-4-12b-it-qat-q4_0.gguf`
-- Optional multimodal projector, such as `mmproj-gemma-4-12b-it-qat-q4_0.gguf`
+- A Gemma 4 GGUF model file, such as `gemma4-v2-Q4_K_M.gguf`
+- Optional multimodal projector, if you choose a multimodal model
 
 Recommended local layout:
 
 ```text
-gemma4-codex-local/
+Gemma4-Experiments/
   llama-cpp/
     llama-server.exe
+    ggml-cuda.dll
+    cudart64_12.dll
   models/
-    gemma-4-12b-it-qat-q4_0.gguf
-    mmproj-gemma-4-12b-it-qat-q4_0.gguf
+    gemma4-v2-Q4_K_M.gguf
 ```
 
-If `GEMMA4_MODEL` is not set and the local `models/` file is not present, the launcher downloads and starts the official 12B GGUF from Hugging Face:
+For this Windows workstation, use the CUDA llama.cpp build rather than the CPU build:
 
 ```text
-google/gemma-4-12B-it-qat-q4_0-gguf
+llama-b9739-bin-win-cuda-12.4-x64.zip
+cudart-llama-bin-win-cuda-12.4-x64.zip
+```
+
+The second package provides the CUDA runtime DLLs, including `cudart64_12.dll`. Verify GPU detection with:
+
+```cmd
+llama-cpp\llama-server.exe --list-devices
+```
+
+Expected on this machine:
+
+```text
+CUDA0: NVIDIA GeForce RTX 3070
+```
+
+If `GEMMA4_MODEL` is not set and the local `models/` file is not present, the launcher downloads and starts the recommended local coding model from Hugging Face:
+
+```text
+yuxinlu1/gemma-4-12B-agentic-fable5-composer2.5-v2-3.5x-tau2-GGUF
+gemma4-v2-Q4_K_M.gguf
+```
+
+If llama.cpp cannot download from Hugging Face because of local SSL or certificate handling, download the GGUF with a browser, `huggingface-cli`, or PowerShell, then place it at:
+
+```text
+models/gemma4-v2-Q4_K_M.gguf
 ```
 
 You can also keep files anywhere and set environment variables before launching:
 
 ```cmd
 set GEMMA4_LLAMA_SERVER=C:\path\to\llama-server.exe
-set GEMMA4_MODEL=C:\path\to\gemma-4-12b-it-qat-q4_0.gguf
-set GEMMA4_MMPROJ=C:\path\to\mmproj-gemma-4-12b-it-qat-q4_0.gguf
+set GEMMA4_MODEL=C:\path\to\gemma4-v2-Q4_K_M.gguf
 ```
 
-On a computer with substantially more RAM and VRAM, you can try the 31B model:
+On a computer with substantially more RAM and VRAM, you can try a larger model:
 
 ```cmd
-set GEMMA4_HF_REPO=google/gemma-4-31B-it-qat-q4_0-gguf
-set GEMMA4_HF_FILE=gemma-4-31B_q4_0-it.gguf
+set GEMMA4_HF_REPO=unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF
+set GEMMA4_HF_FILE=Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf
 start-gemma4-codex-server.cmd
 ```
 
@@ -81,10 +98,23 @@ The profile uses:
 model = "gemma4-codex"
 model_provider = "local_gemma4"
 model_reasoning_effort = "none"
-model_context_window = 32768
+model_context_window = 16384
 ```
 
-The `32768` context gives Codex more room for project files and tool output. Gemma does not understand Codex's hosted-model reasoning controls, so the Gemma profile disables inherited reasoning effort.
+The Codex profile and server launcher both default to `16384` context for a safer first run on an 8 GB RTX 3070. Raise both `model_context_window` and `GEMMA4_CTX_SIZE` after confirming the model fits your workload. Gemma does not understand Codex's hosted-model reasoning controls, so the Gemma profile disables inherited reasoning effort.
+
+## Machine Notes
+
+This setup was sized for:
+
+- CPU: Intel Core i7-11700K, 8 cores / 16 threads
+- RAM: 128 GB
+- GPU: NVIDIA GeForce RTX 3070, 8 GB VRAM
+- Driver: NVIDIA 591.74
+
+The large system RAM means bigger GGUF models can load, but the 8 GB GPU is still the main performance constraint. For daily Codex software development, prefer a model that mostly fits GPU memory and only spills lightly to RAM. The default `gemma4-v2-Q4_K_M.gguf` is the practical daily-driver choice for this machine.
+
+The recommended larger-model experiment is Qwen3-Coder-30B-A3B in a 4-bit GGUF. It should load with 128 GB RAM, but it will spill beyond the RTX 3070's VRAM and run slower. Very large GGUFs, such as Qwen3-Coder-Next Q4_K_M, are loadable in RAM but likely too slow for normal Codex iteration on this GPU.
 
 ## Start Gemma 4
 
@@ -124,8 +154,6 @@ Ask:
 What model are you?
 ```
 
-In testing, the local model identified itself as Gemma 4.
-
 ## Use OpenAI Models Normally
 
 Launch Codex without the profile:
@@ -152,7 +180,31 @@ This warning is nonfatal. Codex does not have a built-in catalog entry for the c
 
 `request exceeds the available context size`
 
-Start `llama-server` with a larger context. This project defaults to `GEMMA4_CTX_SIZE=32768`. Larger context windows need more memory, especially on 12B and 31B models.
+Start `llama-server` with a larger context and update `model_context_window` in `gemma4.config.toml` to match. This project defaults to `GEMMA4_CTX_SIZE=16384`. Larger context windows need more memory, especially on 12B and larger models.
+
+`llama-server` starts but does not use the GPU
+
+Make sure the CUDA llama.cpp package and the CUDA runtime package were both extracted into `llama-cpp/`. Confirm `ggml-cuda.dll` and `cudart64_12.dll` are present, then run:
+
+```cmd
+llama-cpp\llama-server.exe --list-devices
+```
+
+`Expand-Archive` fails on a downloaded CUDA zip
+
+An interrupted GitHub release download can leave a corrupt zip. Delete the partial zip and download it again before extracting.
+
+`failed to download model from Hugging Face` with `SSL server verification failed`
+
+The llama.cpp built-in Hugging Face downloader may fail certificate verification on this Windows setup. Download `gemma4-v2-Q4_K_M.gguf` separately and place it in `models/`, or set `GEMMA4_MODEL` to the downloaded file path before running the launcher.
+
+`codex -p gemma4 debug models` fails
+
+That debug command does not accept `--profile` in this Codex CLI build. Use this non-generating config-load check instead:
+
+```cmd
+codex -p gemma4 debug prompt-input "ping"
+```
 
 `gemma4-codex is not listed by /v1/models`
 
