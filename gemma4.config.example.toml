@@ -1,0 +1,10 @@
+# Copy this file to:
+#   Windows: C:\Users\YOUR_NAME\.codex\gemma4.config.toml
+#   macOS/Linux: ~/.codex/gemma4.config.toml
+#
+# Launch with:
+#   codex -p gemma4
+
+model = "gemma4-codex"
+model_provider = "local_gemma4"
+model_context_window = 16384

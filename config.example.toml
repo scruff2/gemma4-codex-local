@@ -1,0 +1,11 @@
+# Add this provider block to your existing user-level Codex config:
+#   Windows: C:\Users\YOUR_NAME\.codex\config.toml
+#   macOS/Linux: ~/.codex/config.toml
+#
+# Keep your existing top-level OpenAI model setting, such as:
+#   model = "gpt-5.5"
+
+[model_providers.local_gemma4]
+name = "Local Gemma 4 via llama.cpp"
+base_url = "http://127.0.0.1:18080/v1"
+wire_api = "responses"

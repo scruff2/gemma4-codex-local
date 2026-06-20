@@ -1,0 +1,4 @@
+*.log
+*.pid
+llama-cpp/
+models/
