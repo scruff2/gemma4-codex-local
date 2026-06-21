@@ -25,6 +25,7 @@ if "%GEMMA4_CACHE_TYPE_K%"=="" set "GEMMA4_CACHE_TYPE_K=q4_0"
 if "%GEMMA4_CACHE_TYPE_V%"=="" set "GEMMA4_CACHE_TYPE_V=q4_0"
 if "%GEMMA4_FLASH_ATTN%"=="" set "GEMMA4_FLASH_ATTN=on"
 if "%GEMMA4_FIT_TARGET%"=="" set "GEMMA4_FIT_TARGET=512"
+if "%GEMMA4_MAX_OUTPUT_TOKENS%"=="" set "GEMMA4_MAX_OUTPUT_TOKENS=2048"
 if "%GEMMA4_LOG%"=="" set "GEMMA4_LOG=%CD%\gemma4-codex-server.log"
 
 if not exist "%GEMMA4_LLAMA_SERVER%" (
@@ -92,6 +93,7 @@ if not defined GEMMA4_MODEL (
       --cache-type-v "%GEMMA4_CACHE_TYPE_V%" ^
       --flash-attn "%GEMMA4_FLASH_ATTN%" ^
       --fit-target "%GEMMA4_FIT_TARGET%" ^
+      --n-predict "%GEMMA4_MAX_OUTPUT_TOKENS%" ^
       --jinja ^
       --reasoning off ^
       --alias "%GEMMA4_ALIAS%" ^
@@ -108,6 +110,7 @@ if not defined GEMMA4_MODEL (
       --cache-type-v "%GEMMA4_CACHE_TYPE_V%" ^
       --flash-attn "%GEMMA4_FLASH_ATTN%" ^
       --fit-target "%GEMMA4_FIT_TARGET%" ^
+      --n-predict "%GEMMA4_MAX_OUTPUT_TOKENS%" ^
       --jinja ^
       --reasoning off ^
       --alias "%GEMMA4_ALIAS%" ^
@@ -126,6 +129,7 @@ if not defined GEMMA4_MODEL (
     --cache-type-v "%GEMMA4_CACHE_TYPE_V%" ^
     --flash-attn "%GEMMA4_FLASH_ATTN%" ^
     --fit-target "%GEMMA4_FIT_TARGET%" ^
+    --n-predict "%GEMMA4_MAX_OUTPUT_TOKENS%" ^
     --jinja ^
     --reasoning off ^
     --alias "%GEMMA4_ALIAS%" ^
@@ -146,6 +150,7 @@ if not defined GEMMA4_MODEL (
     --cache-type-v "%GEMMA4_CACHE_TYPE_V%" ^
     --flash-attn "%GEMMA4_FLASH_ATTN%" ^
     --fit-target "%GEMMA4_FIT_TARGET%" ^
+    --n-predict "%GEMMA4_MAX_OUTPUT_TOKENS%" ^
     --jinja ^
     --reasoning off ^
     --alias "%GEMMA4_ALIAS%" ^

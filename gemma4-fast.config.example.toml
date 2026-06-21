@@ -1,0 +1,5 @@
+model = "gemma4-fast"
+model_provider = "local_gemma4_fast"
+model_reasoning_effort = "none"
+model_context_window = 32768
+model_catalog_json = 'C:\Users\YOUR_NAME\.codex\model_catalog.gemma4-fast.json'
