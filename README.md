@@ -132,6 +132,8 @@ This setup was sized for:
 
 The large system RAM means bigger GGUF models can load, but the 8 GB GPU is still the main performance constraint. For daily Codex software development, prefer a model that mostly fits GPU memory and only spills lightly to RAM. The default `gemma4-v2-Q4_K_M.gguf` is the practical daily-driver choice for this machine.
 
+The launcher is tuned for a single local Codex session: one server slot, Q4 KV cache, Flash Attention, automatic GPU-layer fitting, and a 512 MiB fitting margin. This avoids reserving KV memory for four parallel 32K sessions and gives llama.cpp more room to offload model layers to the RTX 3070. Override `GEMMA4_PARALLEL`, `GEMMA4_CACHE_TYPE_K`, `GEMMA4_CACHE_TYPE_V`, `GEMMA4_FLASH_ATTN`, or `GEMMA4_FIT_TARGET` when testing other trade-offs.
+
 The recommended larger-model experiment is Qwen3-Coder-30B-A3B in a 4-bit GGUF. It should load with 128 GB RAM, but it will spill beyond the RTX 3070's VRAM and run slower. Very large GGUFs, such as Qwen3-Coder-Next Q4_K_M, are loadable in RAM but likely too slow for normal Codex iteration on this GPU.
 
 ## Start Gemma 4

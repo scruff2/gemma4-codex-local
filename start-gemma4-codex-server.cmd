@@ -20,6 +20,11 @@ if "%GEMMA4_PORT%"=="" set "GEMMA4_PORT=18080"
 if "%GEMMA4_ALIAS%"=="" set "GEMMA4_ALIAS=gemma4-codex"
 if "%GEMMA4_CTX_SIZE%"=="" set "GEMMA4_CTX_SIZE=32768"
 if "%GEMMA4_GPU_LAYERS%"=="" set "GEMMA4_GPU_LAYERS=auto"
+if "%GEMMA4_PARALLEL%"=="" set "GEMMA4_PARALLEL=1"
+if "%GEMMA4_CACHE_TYPE_K%"=="" set "GEMMA4_CACHE_TYPE_K=q4_0"
+if "%GEMMA4_CACHE_TYPE_V%"=="" set "GEMMA4_CACHE_TYPE_V=q4_0"
+if "%GEMMA4_FLASH_ATTN%"=="" set "GEMMA4_FLASH_ATTN=on"
+if "%GEMMA4_FIT_TARGET%"=="" set "GEMMA4_FIT_TARGET=512"
 if "%GEMMA4_LOG%"=="" set "GEMMA4_LOG=%CD%\gemma4-codex-server.log"
 
 if not exist "%GEMMA4_LLAMA_SERVER%" (
@@ -82,6 +87,11 @@ if not defined GEMMA4_MODEL (
       --port "%GEMMA4_PORT%" ^
       --ctx-size "%GEMMA4_CTX_SIZE%" ^
       --n-gpu-layers "%GEMMA4_GPU_LAYERS%" ^
+      --parallel "%GEMMA4_PARALLEL%" ^
+      --cache-type-k "%GEMMA4_CACHE_TYPE_K%" ^
+      --cache-type-v "%GEMMA4_CACHE_TYPE_V%" ^
+      --flash-attn "%GEMMA4_FLASH_ATTN%" ^
+      --fit-target "%GEMMA4_FIT_TARGET%" ^
       --jinja ^
       --reasoning off ^
       --alias "%GEMMA4_ALIAS%" ^
@@ -93,6 +103,11 @@ if not defined GEMMA4_MODEL (
       --port "%GEMMA4_PORT%" ^
       --ctx-size "%GEMMA4_CTX_SIZE%" ^
       --n-gpu-layers "%GEMMA4_GPU_LAYERS%" ^
+      --parallel "%GEMMA4_PARALLEL%" ^
+      --cache-type-k "%GEMMA4_CACHE_TYPE_K%" ^
+      --cache-type-v "%GEMMA4_CACHE_TYPE_V%" ^
+      --flash-attn "%GEMMA4_FLASH_ATTN%" ^
+      --fit-target "%GEMMA4_FIT_TARGET%" ^
       --jinja ^
       --reasoning off ^
       --alias "%GEMMA4_ALIAS%" ^
@@ -106,6 +121,11 @@ if not defined GEMMA4_MODEL (
     --port "%GEMMA4_PORT%" ^
     --ctx-size "%GEMMA4_CTX_SIZE%" ^
     --n-gpu-layers "%GEMMA4_GPU_LAYERS%" ^
+    --parallel "%GEMMA4_PARALLEL%" ^
+    --cache-type-k "%GEMMA4_CACHE_TYPE_K%" ^
+    --cache-type-v "%GEMMA4_CACHE_TYPE_V%" ^
+    --flash-attn "%GEMMA4_FLASH_ATTN%" ^
+    --fit-target "%GEMMA4_FIT_TARGET%" ^
     --jinja ^
     --reasoning off ^
     --alias "%GEMMA4_ALIAS%" ^
@@ -121,6 +141,11 @@ if not defined GEMMA4_MODEL (
     --port "%GEMMA4_PORT%" ^
     --ctx-size "%GEMMA4_CTX_SIZE%" ^
     --n-gpu-layers "%GEMMA4_GPU_LAYERS%" ^
+    --parallel "%GEMMA4_PARALLEL%" ^
+    --cache-type-k "%GEMMA4_CACHE_TYPE_K%" ^
+    --cache-type-v "%GEMMA4_CACHE_TYPE_V%" ^
+    --flash-attn "%GEMMA4_FLASH_ATTN%" ^
+    --fit-target "%GEMMA4_FIT_TARGET%" ^
     --jinja ^
     --reasoning off ^
     --alias "%GEMMA4_ALIAS%" ^
